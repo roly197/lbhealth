@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Bash CGI script to return http status for running service.
+# Run from NGINX server. Make sure all files have group access: http-data
+#
+# ToDo: 	Add option for TCP listener port check
+#		Separate html response content to files.
+# 
+
+#set -x
+
+## Set maintenance mode for manual fail-over
+#maintenance=0
+
+source ./etc/health.cfg
+
+numprocs=`ps -ef|grep $procpattern| wc -l`
+if [ "$numprocs" -ge "$maxprocs" ] && [ "$maintenance" == 0 ];then
+	echo "Content-type: text/html"
+	echo ''
+	echo '<h1>200 OK</h1>'
+else
+	echo "Status: 404 Not Found"
+	echo "Content-type: text/html"
+	echo ''
+	echo '<h1>404 File not found!</h1>'
+fi
